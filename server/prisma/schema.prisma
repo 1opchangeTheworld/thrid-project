@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Faculty {
+  id          Int          @id @default(autoincrement())
+  name        String
+  majors      Major[]
+  students    Student[]
+  users       User[]
+  subjects    Subject[]
+  enrollments Enrollment[]
+}
+
+model Major {
+  id          Int          @id @default(autoincrement())
+  faculty_id  Int
+  name        String
+  faculty     Faculty      @relation(fields: [faculty_id], references: [id])
+  students    Student[]
+  users       User[]
+  enrollments Enrollment[]
+  subjects    Subject[]
+
+  @@index([faculty_id])
+}
+
+model Student {
+  id           Int     @id @default(autoincrement())
+  student_id   String  @unique
+  password     String
+  title_th     Boolean
+  firstname_th String
+  lastname_th  String
+  faculties_id Int
+  majors_id    Int
+  certificate  String
+  email        String
+  actives      Boolean
+
+  faculty        Faculty          @relation(fields: [faculties_id], references: [id])
+  major          Major            @relation(fields: [majors_id], references: [id])
+  SubjectStudent SubjectStudent[]
+  enrollments    Enrollment[]
+
+  @@index([faculties_id])
+  @@index([majors_id])
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  username     String  @unique
+  password     String
+  firstname    String
+  lastname     String
+  telephone    String
+  email        String
+  faculties_id Int?
+  majors_id    Int?
+  profile_img  String  @default("")
+  role         String
+  actives      Boolean
+
+  faculty Faculty? @relation(fields: [faculties_id], references: [id])
+  major   Major?   @relation(fields: [majors_id], references: [id])
+
+  @@index([faculties_id])
+  @@index([majors_id])
+}
+
+model Subject {
+  id               String            @id
+  faculties        Faculty           @relation(fields: [facultiesId], references: [id])
+  facultiesId      Int
+  subId            String            @db.VarChar(15)
+  subName          String            @db.VarChar(45)
+  subUnit          Float
+  subGroup         Boolean
+  type             SubjectType
+  SubjectStudent   SubjectStudent[]
+  semesterSubjects SemesterSubject[]
+  major            Major?            @relation(fields: [majorId], references: [id])
+  majorId          Int?
+
+  @@map("Subject")
+}
+
+model SubjectStudent {
+  id          Int    @id @default(autoincrement())
+  subject_id  String
+  student_id  Int
+  semester_id Int
+
+  score  Float?
+  grade  String?
+  status String?
+
+  subject  Subject  @relation(fields: [subject_id], references: [id])
+  student  Student  @relation(fields: [student_id], references: [id])
+  semester Semester @relation(fields: [semester_id], references: [id])
+
+  @@index([subject_id])
+  @@index([student_id])
+  @@index([semester_id])
+}
+
+model Semester {
+  id        Int      @id @default(autoincrement())
+  year      Int
+  term      Int
+  startDate DateTime
+  endDate   DateTime
+
+  enrollments      Enrollment[]
+  subjectRecords   SubjectStudent[]
+  semesterSubjects SemesterSubject[] // <--- add this
+}
+
+model Enrollment {
+  id          Int @id @default(autoincrement())
+  student_id  Int
+  faculty_id  Int
+  major_id    Int
+  semester_id Int
+
+  student  Student  @relation(fields: [student_id], references: [id])
+  faculty  Faculty  @relation(fields: [faculty_id], references: [id])
+  major    Major    @relation(fields: [major_id], references: [id])
+  semester Semester @relation(fields: [semester_id], references: [id])
+
+  @@index([student_id])
+  @@index([faculty_id])
+  @@index([major_id])
+  @@index([semester_id])
+}
+
+model SemesterSubject {
+  id         Int    @id @default(autoincrement())
+  semesterId Int
+  subjectId  String
+
+  semester Semester @relation(fields: [semesterId], references: [id])
+  subject  Subject  @relation(fields: [subjectId], references: [id])
+
+  @@unique([semesterId, subjectId])
+  @@index([semesterId])
+  @@index([subjectId])
+}
+
+enum SubjectType {
+  bs
+  trans
+}
