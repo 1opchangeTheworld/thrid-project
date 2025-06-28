@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
+  Box,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -20,6 +21,7 @@ import AddHomeIcon from "@mui/icons-material/AddHome";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { useAuth } from "../hooks/useAuth";
+import rmutkLogo from "../assets/image/rmutk.png";
 
 const drawerWidth = 240;
 
@@ -46,14 +48,33 @@ function Sidebar() {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#1872c7",
+          backgroundColor: "#11ab8f",
         },
         [`& .MuiListItemText-primary`]: {
-          color: "#fff",
-          fontWeight: "light",
+          color: "#e5e5e5",
+          fontWeight: "bold",
         },
       }}
     >
+      {/* Add logo at the top */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          py: 2,
+        }}
+      >
+        <img
+          src={rmutkLogo}
+          alt="RMUTK Logo"
+          style={{
+            width: 200,
+            height: "auto",
+            borderRadius: 8,
+          }}
+        />
+      </Box>
       <List>
         <ListItem button component={Link} to="/dashboard">
           <ListItemIcon sx={{ color: "#fff" }}>

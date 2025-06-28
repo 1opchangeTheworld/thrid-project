@@ -118,7 +118,7 @@ model Semester {
 
   enrollments      Enrollment[]
   subjectRecords   SubjectStudent[]
-  semesterSubjects SemesterSubject[] // <--- add this
+  semesterSubjects SemesterSubject[]
 }
 
 model Enrollment {

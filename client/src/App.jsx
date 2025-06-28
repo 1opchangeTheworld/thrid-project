@@ -14,7 +14,6 @@ import { useAuth } from "./hooks/useAuth";
 
 function App() {
   const { role } = useAuth();
-
   return (
     <BrowserRouter>
       <Routes>
@@ -33,10 +32,38 @@ function App() {
           path="/users"
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
-              <FacultyPage />
-              <MajorPage />
               <UserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/majors"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <MajorPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/faculties"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <FacultyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/students"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subjects"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <SubjectPage />
             </ProtectedRoute>
           }
