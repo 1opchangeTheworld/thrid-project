@@ -34,12 +34,14 @@ model Student {
   id           Int     @id @default(autoincrement())
   student_id   String  @unique
   password     String
-  title_th     Boolean
+  title_th     String
   firstname_th String
   lastname_th  String
+  telephone    String
   faculties_id Int
   majors_id    Int
-  certificate  String
+  certificate  String? @default("")
+  profile_img  String? @default("")
   email        String
   actives      Boolean
 
@@ -62,7 +64,7 @@ model User {
   email        String
   faculties_id Int?
   majors_id    Int?
-  profile_img  String  @default("")
+  profile_img  String? @default("")
   role         String
   actives      Boolean
 

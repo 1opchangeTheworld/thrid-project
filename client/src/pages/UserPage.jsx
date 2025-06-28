@@ -215,7 +215,9 @@ function UserPage() {
               justifyContent: "space-between",
             }}
           >
-            <Typography variant="h4">Users</Typography>
+            <Typography variant="h5" fontWeight={500}>
+              ผู้ใช้งาน
+            </Typography>
             <Button variant="contained" onClick={() => handleOpen()}>
               Add User
             </Button>

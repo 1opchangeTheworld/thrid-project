@@ -7,6 +7,10 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import * as studentService from "../services/studentService";
 import { getFaculties } from "../services/facultyService";
 import { getMajors } from "../services/majorService";
+import { useBase64 } from "../hooks/useBase64";
+import defaultProfileImg from "../assets/image/profile.png";
+import { useValidation } from "../hooks/useValidation";
+import CustomAlert from "../components/CustomAlert";
 import {
   Box,
   Button,
@@ -23,6 +27,23 @@ import {
 } from "@mui/material";
 
 const columns = [
+  {
+    field: "profile_img",
+    headerName: "Image",
+    renderCell: (row) => (
+      <img
+        src={row.profile_img ? row.profile_img : defaultProfileImg}
+        alt="profile"
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          objectFit: "cover",
+          border: "1px solid #eee",
+        }}
+      />
+    ),
+  },
   { field: "student_id", headerName: "Student Id" },
   { field: "firstname_th", headerName: "First Name" },
   { field: "lastname_th", headerName: "Last Name" },
@@ -40,21 +61,40 @@ function StudentPage() {
   const [form, setForm] = useState({
     student_id: "",
     password: "P@ssw0rd",
+    title_th: "",
     firstname_th: "",
     lastname_th: "",
     telephone: "",
     email: "",
     faculties_id: "",
     majors_id: "",
+    certificate: "",
     profile_img: "",
     actives: true,
   });
   const [editId, setEditId] = useState(null);
   const [studentIdError, setStudentIdError] = useState("");
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "success",
+    message: "",
+  });
+  const toBase64 = useBase64();
+
+  const requiredFields = [
+    "student_id",
+    "title_th",
+    "firstname_th",
+    "lastname_th",
+    "telephone",
+    "email",
+    "faculties_id",
+    "majors_id",
+  ];
+  const { errors, validate, resetErrors } = useValidation(requiredFields);
 
   const fetchStudents = async () => {
     const res = await studentService.getStudents();
-    console.log("Fetched students:", res.data);
     setStudents(res.data);
   };
   const fetchFaculties = async () => {
@@ -77,6 +117,7 @@ function StudentPage() {
       setForm({
         student_id: student.student_id || "",
         password: student.password || "",
+        title_th: student.title_th || "", // <-- add this line
         firstname_th: student.firstname_th || "",
         lastname_th: student.lastname_th || "",
         telephone: student.telephone || "",
@@ -84,6 +125,7 @@ function StudentPage() {
         faculties_id: student.faculties_id || "",
         majors_id: student.majors_id || "",
         profile_img: student.profile_img || "",
+        certificate: "",
         actives: student.actives ?? true,
       });
       setEditId(student.id);
@@ -91,6 +133,7 @@ function StudentPage() {
       setForm({
         student_id: "",
         password: "P@ssw0rd",
+        title_th: "",
         firstname_th: "",
         lastname_th: "",
         telephone: "",
@@ -98,6 +141,7 @@ function StudentPage() {
         faculties_id: "",
         majors_id: "",
         profile_img: "",
+        certificate: "",
         actives: true,
       });
       setEditId(null);
@@ -109,33 +153,37 @@ function StudentPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "student_id") {
-      // Only allow numbers and max 12 digits
-      if (!/^\d{0,12}$/.test(value)) {
-        setStudentIdError(
-          "Student ID must be numbers only and up to 12 digits."
-        );
-      } else {
-        setStudentIdError("");
-      }
-    }
     setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async () => {
-    // Prevent submit if error
-    if (studentIdError) return;
-    if (editId) {
-      await updateStudent(editId, form);
-    } else {
-      await createStudent(form);
+    resetErrors();
+    if (!validate(form) || studentIdError) return;
+    try {
+      if (editId) {
+        await studentService.updateStudent(editId, form);
+        setAlert({
+          open: true,
+          severity: "success",
+          message: "Student updated successfully!",
+        });
+      } else {
+        await studentService.createStudent(form);
+        setAlert({
+          open: true,
+          severity: "success",
+          message: "Student created successfully!",
+        });
+      }
+      fetchStudents();
+      handleClose();
+    } catch (err) {
+      setAlert({ open: true, severity: "error", message: "Operation failed!" });
     }
-    fetchStudents();
-    handleClose();
   };
 
   const handleDelete = async (id) => {
-    await deleteStudent(id);
+    await studentService.deleteStudent(id);
     fetchStudents();
   };
 
@@ -185,7 +233,9 @@ function StudentPage() {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h4">Students</Typography>
+          <Typography variant="h5" fontWeight={700} className="title-thai">
+            นักศึกษา
+          </Typography>
           <Box>
             <Button
               variant="contained"
@@ -219,95 +269,173 @@ function StudentPage() {
           <DialogTitle>{editId ? "Edit Student" : "Add Student"}</DialogTitle>
           <DialogContent>
             <Box
+              component="form"
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                minWidth: 400,
-                py: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 4,
+                width: "100%",
+                py: 2,
+                justifyContent: "justify-between",
+                alignItems: "flex-start",
               }}
             >
-              <TextField
-                margin="dense"
-                label="Student ID"
-                name="student_id"
-                value={form.student_id}
-                onChange={handleChange}
-                fullWidth
-                inputProps={{
-                  maxLength: 12,
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
+              <Box
+                sx={{
+                  flex: "1 1 320px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
                 }}
-                error={!!studentIdError}
-                helperText={studentIdError}
-              />
-              <TextField
-                margin="dense"
-                label="First Name"
-                name="firstname_th"
-                value={form.firstname_th}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                margin="dense"
-                label="Last Name"
-                name="lastname_th"
-                value={form.lastname_th}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                margin="dense"
-                label="Telephone"
-                name="telephone"
-                value={form.telephone}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                margin="dense"
-                label="Email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                fullWidth
-              />
-              <FormControl fullWidth margin="dense">
-                <InputLabel id="faculty-label">Faculty</InputLabel>
-                <Select
-                  labelId="faculty-label"
-                  id="faculties_id"
-                  label="Faculty"
-                  name="faculties_id"
-                  value={form.faculties_id}
+              >
+                <TextField
+                  margin="dense"
+                  label="Student ID"
+                  name="student_id"
+                  value={form.student_id}
                   onChange={handleChange}
-                >
-                  {faculties.map((faculty) => (
-                    <MenuItem key={faculty.id} value={faculty.id}>
-                      {faculty.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="dense">
-                <InputLabel id="major-label">Major</InputLabel>
-                <Select
-                  labelId="major-label"
-                  id="majors_id"
-                  label="Major"
-                  name="majors_id"
-                  value={form.majors_id}
+                  fullWidth
+                  error={!!errors.student_id}
+                  helperText={errors.student_id}
+                />
+                <TextField
+                  margin="dense"
+                  label="Title (TH)"
+                  name="title_th"
+                  value={form.title_th}
                   onChange={handleChange}
-                >
-                  {majors.map((major) => (
-                    <MenuItem key={major.id} value={major.id}>
-                      {major.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  fullWidth
+                  error={!!errors.title_th}
+                  helperText={errors.title_th}
+                />
+                <TextField
+                  margin="dense"
+                  label="First Name"
+                  name="firstname_th"
+                  value={form.firstname_th}
+                  onChange={handleChange}
+                  fullWidth
+                  error={!!errors.firstname_th}
+                  helperText={errors.firstname_th}
+                />
+                <TextField
+                  margin="dense"
+                  label="Last Name"
+                  name="lastname_th"
+                  value={form.lastname_th}
+                  onChange={handleChange}
+                  fullWidth
+                  error={!!errors.lastname_th}
+                  helperText={errors.lastname_th}
+                />
+                <TextField
+                  margin="dense"
+                  label="Telephone"
+                  name="telephone"
+                  value={form.telephone}
+                  onChange={handleChange}
+                  fullWidth
+                  error={!!errors.telephone}
+                  helperText={errors.telephone}
+                />
+                <TextField
+                  margin="dense"
+                  label="Email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  fullWidth
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+              </Box>
+              <Box
+                sx={{
+                  flex: "1 1 320px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                }}
+              >
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="faculty-label">Faculty</InputLabel>
+                  <Select
+                    labelId="faculty-label"
+                    id="faculties_id"
+                    label="Faculty"
+                    name="faculties_id"
+                    value={form.faculties_id}
+                    onChange={handleChange}
+                    error={!!errors.faculties_id}
+                    helperText={errors.faculties_id}
+                  >
+                    {faculties.map((faculty) => (
+                      <MenuItem key={faculty.id} value={faculty.id}>
+                        {faculty.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="major-label">Major</InputLabel>
+                  <Select
+                    labelId="major-label"
+                    id="majors_id"
+                    label="Major"
+                    name="majors_id"
+                    value={form.majors_id}
+                    onChange={handleChange}
+                    disabled={!form.faculties_id}
+                    error={!!errors.majors_id}
+                    helperText={errors.majors_id}
+                  >
+                    {majors
+                      .filter(
+                        (major) =>
+                          major.faculty_id === Number(form.faculties_id)
+                      )
+                      .map((major) => (
+                        <MenuItem key={major.id} value={major.id}>
+                          {major.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+                <Button variant="outlined" component="label" sx={{ mt: 1 }}>
+                  Upload Profile Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      const base64 = await toBase64(file);
+                      setForm({ ...form, profile_img: base64 });
+                    }}
+                  />
+                </Button>
+                {form.profile_img && (
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="body2">
+                      Selected: รูปภาพถูกแปลงเป็น base64 แล้ว
+                    </Typography>
+                    <img
+                      src={form.profile_img}
+                      alt="Preview"
+                      style={{
+                        width: 100,
+                        height: 100,
+                        marginTop: 8,
+                        borderRadius: 8,
+                        objectFit: "cover",
+                        border: "1px solid #eee",
+                      }}
+                    />
+                  </Box>
+                )}
+              </Box>
             </Box>
           </DialogContent>
           <DialogActions>
@@ -321,6 +449,12 @@ function StudentPage() {
             </Button>
           </DialogActions>
         </Dialog>
+        <CustomAlert
+          open={alert.open}
+          onClose={() => setAlert({ ...alert, open: false })}
+          severity={alert.severity}
+          message={alert.message}
+        />
       </Box>
     </Box>
   );

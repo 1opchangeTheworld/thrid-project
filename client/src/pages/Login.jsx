@@ -34,11 +34,15 @@ function Login() {
   return (
     <Box
       sx={{
+        width: "100%",
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         bgcolor: "#f5f5f5",
+        bgcolor: "#1976d2",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       <Paper elevation={3} sx={{ p: 4, minWidth: 320 }}>
@@ -52,8 +56,8 @@ function Login() {
             Login successful! Role: <b>{role}</b>
           </Alert>
         )}
-        <Typography variant="h5" mb={2} align="center">
-          Login
+        <Typography variant="h4" mb={4} fontWeight={"bold"} align="center">
+          ระบบจัดการข้อมูลนักศึกษา
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField

@@ -107,7 +107,9 @@ export default function FacultyPage() {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h4">Faculties</Typography>
+          <Typography variant="h5" fontWeight={500}>
+            คณะ
+          </Typography>
           <Button variant="contained" onClick={() => handleOpen()}>
             Add Faculty
           </Button>

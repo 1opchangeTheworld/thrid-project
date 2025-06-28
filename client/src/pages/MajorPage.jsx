@@ -125,7 +125,9 @@ function MajorPage() {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h4">Majors</Typography>
+          <Typography variant="h5" fontWeight={500}>
+            สาขาวิชา
+          </Typography>
           <Button variant="contained" onClick={() => handleOpen()}>
             Add Major
           </Button>

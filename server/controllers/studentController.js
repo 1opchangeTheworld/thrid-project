@@ -13,12 +13,11 @@ exports.getStudentById = async (req, res) => {
 };
 
 exports.createStudent = async (req, res) => {
-  const { username, password, ...rest } = req.body;
+  const { password, ...rest } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const student = await prisma.student.create({
       data: {
-        username,
         password: hashedPassword,
         ...rest,
       },

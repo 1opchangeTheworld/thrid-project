@@ -57,9 +57,10 @@ async function main() {
       data: {
         student_id: `S2024${i.toString().padStart(3, '0')}`,
         password: await bcrypt.hash(`password${i}`, 10),
-        title_th: i % 2 === 0,
+        title_th: i % 2 === 0 ? "นาย" : "นางสาว",
         firstname_th: `ชื่อ${i}`,
         lastname_th: `นามสกุล${i}`,
+        telephone: `08000000${i}`, 
         faculties_id: faculty.id,
         majors_id: major.id,
         certificate: `Cert${i}`,

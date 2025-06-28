@@ -54,12 +54,6 @@ function ReportPage() {
     window.print();
   };
 
-  const handleRedirect = () => {
-    if (selectedYear) {
-      navigate(`/compare?year=${selectedYear}`);
-    }
-  };
-
   return (
     <Box sx={{ display: "flex" }}>
       <Sidebar />
@@ -102,14 +96,6 @@ function ReportPage() {
           </Button>
           <Button variant="outlined" onClick={handlePrint}>
             Print
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleRedirect}
-            disabled={!selectedYear}
-          >
-            Go to Compare Page
           </Button>
         </Box>
         <Paper
