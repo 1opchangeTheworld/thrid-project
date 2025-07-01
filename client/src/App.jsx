@@ -6,11 +6,12 @@ import MajorPage from "./pages/MajorPage";
 import FacultyPage from "./pages/FacultyPage";
 import SubjectPage from "./pages/SubjectPage";
 import StudentPage from "./pages/StudentPage";
-import ReportPage from "./pages/ReportPage";
-import ComparePage from "./pages/ComparePage";
+import CoursePage from "./pages/CoursePage";
 import ProfileStudent from "./pages/ProfileStudent";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
+import ComparePage from "./pages/ComparePage";
+import AnnualDataPage from "./pages/AnnualDataPage";
 
 function App() {
   const { role } = useAuth();
@@ -25,6 +26,16 @@ function App() {
               allowedRoles={["Admin", "Teacher", "Committee", "Student"]}
             >
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/annual-data"
+          element={
+            <ProtectedRoute
+              allowedRoles={["Admin", "Teacher", "Committee", "Student"]}
+            >
+              <AnnualDataPage />
             </ProtectedRoute>
           }
         />
@@ -68,7 +79,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/report" element={<ReportPage />} />
+        <Route path="/course" element={<CoursePage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/profileStudent" element={<ProfileStudent />} />
       </Routes>

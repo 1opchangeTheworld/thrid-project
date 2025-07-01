@@ -20,8 +20,11 @@ import SubjectIcon from "@mui/icons-material/Subject";
 import AddHomeIcon from "@mui/icons-material/AddHome";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import SchoolIcon from "@mui/icons-material/School";
 import { useAuth } from "../hooks/useAuth";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import rmutkLogo from "../assets/image/rmutk.png";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 
 const drawerWidth = 240;
 
@@ -48,15 +51,15 @@ function Sidebar() {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#11ab8f",
+          backgroundColor: "#115b98",
         },
         [`& .MuiListItemText-primary`]: {
           color: "#e5e5e5",
-          fontWeight: "bold",
+          fontWeight: "400",
+          fontFamily: "Kanit, sans-serif",
         },
       }}
     >
-      {/* Add logo at the top */}
       <Box
         sx={{
           display: "flex",
@@ -67,7 +70,7 @@ function Sidebar() {
       >
         <img
           src={rmutkLogo}
-          alt="RMUTK Logo"
+          alt="logo"
           style={{
             width: 200,
             height: "auto",
@@ -82,11 +85,17 @@ function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="หน้าหลัก" />
         </ListItem>
-        <ListItem button component={Link} to="/report">
+        <ListItem button component={Link} to="/annual-data">
           <ListItemIcon sx={{ color: "#fff" }}>
-            <AssessmentIcon />
+            <SummarizeIcon />
           </ListItemIcon>
           <ListItemText primary="รายงานเเต่ละปี" />
+        </ListItem>
+        <ListItem button component={Link} to="/compare">
+          <ListItemIcon sx={{ color: "#fff" }}>
+            <CompareArrowsIcon />
+          </ListItemIcon>
+          <ListItemText primary="เทียบรายวิชา" />
         </ListItem>
         {role === "Student" && (
           <ListItem button component={Link} to="/profileStudent">
@@ -112,6 +121,12 @@ function Sidebar() {
                     <PeopleIcon />
                   </ListItemIcon>
                   <ListItemText primary="จัดการผู้ใช้งาน" />
+                </ListItem>
+                <ListItem button component={Link} to="/course" sx={{ pl: 4 }}>
+                  <ListItemIcon sx={{ color: "#fff" }}>
+                    <SchoolIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="จัดการหลักสูตร" />
                 </ListItem>
                 <ListItem button component={Link} to="/students" sx={{ pl: 4 }}>
                   <ListItemIcon sx={{ color: "#fff" }}>

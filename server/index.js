@@ -8,9 +8,9 @@ const facultyRoutes = require('./routes/facultyRoutes');
 const userRoutes = require('./routes/userRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const majorRoutes = require('./routes/majorRoutes');
-const stdSubjectRoutes = require('./routes/stdSubjectRoutes');
-const semesterRoutes = require('./routes/semesterRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const annualCourseRoutes = require('./routes/annualCourseRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 app.use(express.json());
 app.use(cors({
@@ -35,13 +35,14 @@ const setupSwagger = require('./swaggerConfig');
 setupSwagger(app);
 
 app.use('/students', studentRoutes);
+app.use('/annual-courses', annualCourseRoutes);
 app.use('/faculties', facultyRoutes);
 app.use('/users', userRoutes);
 app.use('/subjects', subjectRoutes);
 app.use('/majors', majorRoutes);
-app.use('/stdSubject', stdSubjectRoutes);
-app.use('/semesters', semesterRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

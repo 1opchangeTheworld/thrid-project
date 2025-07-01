@@ -45,10 +45,11 @@ exports.updateSubject = async (req, res) => {
 
 exports.deleteSubject = async (req, res) => {
   try {
-    await prisma.subject.delete({
+    await prisma.subject.update({
       where: { id: req.params.id },
+      data: { actives: true },
     });
-    res.json({ message: 'Subject deleted' });
+    res.json({ message: 'Subject soft deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

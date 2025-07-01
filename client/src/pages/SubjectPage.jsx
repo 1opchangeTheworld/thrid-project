@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useValidation } from "../hooks/useValidation";
 
 const columns = [
   { field: "subId", headerName: "Subject ID" },
@@ -65,18 +66,23 @@ function SubjectPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async () => {
+  const { validate, resetErrors } = useValidation();
+
+  const handleSubmit = () => {
+    resetErrors();
+    if (!validate(form)) return;
+
     if (editId) {
-      await updateSubject(editId, form);
+      subjectService.updateSubject(editId, form);
     } else {
-      await createSubject(form);
+      subjectService.createSubject(form);
     }
     fetchSubjects();
     handleClose();
   };
 
   const handleDelete = async (id) => {
-    await deleteSubject(id);
+    await subjectService.deleteSubject(id);
     fetchSubjects();
   };
 
@@ -141,6 +147,8 @@ function SubjectPage() {
                 name="subId"
                 value={form.subId}
                 onChange={handleChange}
+                error={!!errors.subId}
+                helperText={errors.subId}
                 fullWidth
               />
               <TextField
