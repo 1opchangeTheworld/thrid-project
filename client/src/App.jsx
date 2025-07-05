@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import ComparePage from "./pages/ComparePage";
 import AnnualDataPage from "./pages/AnnualDataPage";
+import PreviewPage from "./pages/PreviewPage";
 
 function App() {
   const { role } = useAuth();
@@ -81,6 +82,7 @@ function App() {
         />
         <Route path="/course" element={<CoursePage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/preview" element={<PreviewPage />} />
         <Route path="/profileStudent" element={<ProfileStudent />} />
       </Routes>
     </BrowserRouter>

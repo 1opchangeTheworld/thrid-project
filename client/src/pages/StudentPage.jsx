@@ -4,6 +4,7 @@ import DefaultTable from "../components/DefaultTable";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DownloadIcon from "@mui/icons-material/Download";
 import * as studentService from "../services/studentService";
 import { getFaculties } from "../services/facultyService";
 import { getMajors } from "../services/majorService";
@@ -11,6 +12,7 @@ import { useBase64 } from "../hooks/useBase64";
 import defaultProfileImg from "../assets/image/profile.png";
 import { useValidation } from "../hooks/useValidation";
 import CustomAlert from "../components/CustomAlert";
+import * as XLSX from "xlsx";
 import {
   Box,
   Button,
@@ -117,7 +119,7 @@ function StudentPage() {
       setForm({
         student_id: student.student_id || "",
         password: student.password || "",
-        title_th: student.title_th || "", // <-- add this line
+        title_th: student.title_th || "",
         firstname_th: student.firstname_th || "",
         lastname_th: student.lastname_th || "",
         telephone: student.telephone || "",
@@ -187,12 +189,42 @@ function StudentPage() {
     fetchStudents();
   };
 
+  // Export students to Excel
+  const handleExport = () => {
+    // Prepare data for export
+    const exportData = students.map((student) => ({
+      "Student Id": student.student_id,
+      "First Name": student.firstname_th,
+      "Last Name": student.lastname_th,
+      Email: student.email,
+      Faculty: student.faculty?.name || "",
+      Major: student.major?.name || "",
+      Telephone: student.telephone,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+    XLSX.writeFile(workbook, "students.xlsx");
+  };
+
   const handleImport = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-    await importStudents(formData);
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(worksheet);
+    console.log("Imported JSON:", json);
+    // You may want to map/validate json before sending to backend
+    // Example: await studentService.importStudents(json);
+    // For demo, just log and show alert
+    // await studentService.importStudents(json); // <-- implement this API if needed
+    setAlert({
+      open: true,
+      severity: "success",
+      message: `Imported ${json.length} students from Excel (implement backend to save).`,
+    });
     fetchStudents();
   };
 
@@ -244,6 +276,17 @@ function StudentPage() {
             >
               Add Student
             </Button>
+            {/* Export Button */}
+            <Button
+              color="warning"
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              sx={{ mr: 2 }}
+              onClick={handleExport}
+            >
+              Export Excel
+            </Button>
+            {/* Import Button */}
             <input
               accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
               style={{ display: "none" }}
@@ -253,7 +296,8 @@ function StudentPage() {
             />
             <label htmlFor="import-student-file">
               <Button
-                variant="outlined"
+                variant="contained"
+                color="secondary"
                 component="span"
                 startIcon={<UploadFileIcon />}
               >

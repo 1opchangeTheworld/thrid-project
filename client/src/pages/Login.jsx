@@ -39,57 +39,58 @@ function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#f5f5f5",
-        bgcolor: "#1976d2",
+        bgcolor: "#3e62a9",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <Paper elevation={3} sx={{ p: 4, minWidth: 320 }}>
-        {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {error}
-          </Alert>
-        )}
-        {role && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            Login successful! Role: <b>{role}</b>
-          </Alert>
-        )}
-        <Typography variant="h4" mb={4} fontWeight={"bold"} align="center">
-          ระบบจัดการข้อมูลนักศึกษา
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Username"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            Login
-          </Button>
-        </form>
-      </Paper>
+      <div>
+        <Paper elevation={3} sx={{ p: 4, minWidth: 320 }}>
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
+          {role && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              Login successful! Role: <b>{role}</b>
+            </Alert>
+          )}
+          <Typography variant="h4" mb={4} fontWeight={"bold"} align="center">
+            ระบบจัดการข้อมูลนักศึกษา
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Username"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+            >
+              Login
+            </Button>
+          </form>
+        </Paper>
+      </div>
     </Box>
   );
 }

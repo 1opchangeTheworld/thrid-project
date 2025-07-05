@@ -1,15 +1,22 @@
-const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const bcrypt = require("bcryptjs");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 exports.getStudents = async (req, res) => {
-  const students = await prisma.student.findMany({ where: { actives: true }, include: { major: true, faculty: true } });
+  const students = await prisma.student.findMany({
+    where: { actives: true },
+    include: { major: true, faculty: true },
+  });
   res.json(students);
 };
 
 exports.getStudentById = async (req, res) => {
-  const student = await prisma.student.findUnique({ where: { id: parseInt(req.params.id) } });
-  student ? res.json(student) : res.status(404).json({ error: 'Student not found' });
+  const student = await prisma.student.findUnique({
+    where: { id: parseInt(req.params.id) },
+  });
+  student
+    ? res.json(student)
+    : res.status(404).json({ error: "Student not found" });
 };
 
 exports.createStudent = async (req, res) => {
@@ -22,7 +29,12 @@ exports.createStudent = async (req, res) => {
         ...rest,
       },
     });
-    res.status(201).json(student);
+
+    sendWelcomeMail(user.email, user.username)
+      .then(() => console.log("Welcome email sent"))
+      .catch((err) => console.error("Failed to send welcome email:", err));
+
+    res.status(200).json(student);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -51,7 +63,24 @@ exports.softDeleteStudent = async (req, res) => {
       where: { id: parseInt(req.params.id) },
       data: { actives: false },
     });
-    res.json({ message: 'Student deactivated', student });
+    res.json({ message: "Student deactivated", student });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.bulkStudents = async (req, res) => {
+  const students = req.body;
+  try {
+    const createdStudents = await prisma.student.createMany({
+      data: students.map((student) => ({
+        ...student,
+        password: bcrypt.hashSync(student.password, 10),
+      })),
+    });
+    res
+      .status(201)
+      .json({ message: "Students imported", count: createdStudents.count });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

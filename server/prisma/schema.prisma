@@ -81,54 +81,75 @@ model Subject {
   subName             String                @db.VarChar(45)
   subUnit             Float
   subGroupId          Int
-  type                SubjectType
   major               Major?                @relation(fields: [majorId], references: [id])
   majorId             Int?
   actives             Boolean               @default(false)
   AnnualCourseSubject AnnualCourseSubject[]
 
-  subGroup SubGroup @relation(fields: [subGroupId], references: [id])
+  subGroup               SubGroup                 @relation(fields: [subGroupId], references: [id])
+  StudentTranscriptGrade StudentTranscriptGrade[]
 
   @@map("Subject")
 }
 
 model AnnualCourse {
-  id        Int                   @id @default(autoincrement())
-  year      Int
-  term      Int
-  startDate DateTime
-  endDate   DateTime
-  facultyId Int
-  majorId   Int
-  faculty   Faculty               @relation(fields: [facultyId], references: [id])
-  major     Major                 @relation(fields: [majorId], references: [id])
-  subjects  AnnualCourseSubject[]
-  actives   Boolean               @default(false)
+  id              Int                   @id @default(autoincrement())
+  year            Int
+  term            Int
+  startDate       DateTime
+  endDate         DateTime
+  facultyId       Int
+  majorId         Int
+  faculty         Faculty               @relation(fields: [facultyId], references: [id])
+  major           Major                 @relation(fields: [majorId], references: [id])
+  subjects        AnnualCourseSubject[]
+  actives         Boolean               @default(false)
+  StudentTransfer StudentTransfer[]
 
   @@index([facultyId])
   @@index([majorId])
 }
 
 model SubGroup {
-  id       Int       @id @default(autoincrement())
-  name     String
-  actives  Boolean   @default(true)
-  subjects Subject[]
+  id          Int       @id @default(autoincrement())
+  codeSubject String    @default("")
+  nameSubject String    @default("")
+  description String?   @default("")
+  actives     Boolean   @default(true)
+  subjects    Subject[]
 }
 
 model AnnualCourseSubject {
-  id             Int         @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   annualCourseId Int
   subjectId      String
-  type           SubjectType
-
-  annualCourse AnnualCourse @relation(fields: [annualCourseId], references: [id])
-  subject      Subject      @relation(fields: [subjectId], references: [id])
+  annualCourse   AnnualCourse @relation(fields: [annualCourseId], references: [id])
+  subject        Subject      @relation(fields: [subjectId], references: [id])
 
   @@unique([annualCourseId, subjectId])
 }
 
-enum SubjectType {
-  BASE
-  TRANSFER
+model StudentTransfer {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  annualCourseId Int
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  annualCourse AnnualCourse             @relation(fields: [annualCourseId], references: [id])
+  grades       StudentTranscriptGrade[]
+}
+
+model StudentTranscriptGrade {
+  id                 Int    @id @default(autoincrement())
+  studentTransfer_id Int
+  subjectId          String
+  grade              Float
+
+  studentTransfer StudentTransfer @relation(fields: [studentTransfer_id], references: [id])
+  subject         Subject         @relation(fields: [subjectId], references: [id])
+
+  @@index([studentTransfer_id])
+  @@index([subjectId])
 }

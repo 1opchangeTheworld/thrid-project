@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const dashboardController = require('../controllers/dashboardController');
+const dashboardController = require("../controllers/dashboardController");
 
 /**
  * @swagger
@@ -30,7 +30,7 @@ const dashboardController = require('../controllers/dashboardController');
  *                   type: integer
  *                   example: 5
  */
-router.get('/user-stats', dashboardController.getUserStats);
+router.get("/user-stats", dashboardController.getUserStats);
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ router.get('/user-stats', dashboardController.getUserStats);
  *                   type: integer
  *                   example: 3
  */
-router.get('/student-stats', dashboardController.getStudentStats);
+router.get("/student-stats", dashboardController.getStudentStats);
 
 /**
  * @swagger
@@ -101,6 +101,9 @@ router.get('/student-stats', dashboardController.getStudentStats);
  *       500:
  *         description: Server error
  */
-router.get('/annual-courses/:year', dashboardController.getCompareSubjectByYear);
+router.get(
+  "/annual-courses/:year",
+  dashboardController.getCompareSubjectByYear
+);
 
 module.exports = router;

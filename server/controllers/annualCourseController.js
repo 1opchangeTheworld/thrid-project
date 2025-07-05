@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 exports.createAnnualCourse = async (req, res) => {
@@ -13,7 +13,7 @@ exports.createAnnualCourse = async (req, res) => {
 exports.getAllAnnualCourses = async (req, res) => {
   try {
     const annualCourses = await prisma.annualCourse.findMany({
-      include: { faculty: true, major: true, subjects: true }
+      include: { faculty: true, major: true, subjects: true },
     });
     res.json(annualCourses);
   } catch (error) {
@@ -25,9 +25,9 @@ exports.getAnnualCourseById = async (req, res) => {
   try {
     const annualCourse = await prisma.annualCourse.findUnique({
       where: { id: Number(req.params.id) },
-      include: { faculty: true, major: true, subjects: true }
+      include: { faculty: true, major: true, subjects: true },
     });
-    if (!annualCourse) return res.status(404).json({ error: 'Not found' });
+    if (!annualCourse) return res.status(404).json({ error: "Not found" });
     res.json(annualCourse);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -50,9 +50,9 @@ exports.deleteAnnualCourse = async (req, res) => {
   try {
     await prisma.annualCourse.update({
       where: { id: Number(req.params.id) },
-       data: { actives: false }
+      data: { actives: false },
     });
-    res.json({ message: 'AnnualCourse deleted' });
+    res.json({ message: "AnnualCourse deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -60,7 +60,9 @@ exports.deleteAnnualCourse = async (req, res) => {
 
 exports.createAnnualCourseSubject = async (req, res) => {
   try {
-    const acSubject = await prisma.annualCourseSubject.create({ data: req.body });
+    const acSubject = await prisma.annualCourseSubject.create({
+      data: req.body,
+    });
     res.json(acSubject);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -70,7 +72,7 @@ exports.createAnnualCourseSubject = async (req, res) => {
 exports.getAllAnnualCourseSubjects = async (req, res) => {
   try {
     const acSubjects = await prisma.annualCourseSubject.findMany({
-      include: { annualCourse: true, subject: true }
+      include: { annualCourse: true, subject: true },
     });
     res.json(acSubjects);
   } catch (error) {
@@ -82,9 +84,9 @@ exports.getAnnualCourseSubjectById = async (req, res) => {
   try {
     const acSubject = await prisma.annualCourseSubject.findUnique({
       where: { id: Number(req.params.id) },
-      include: { annualCourse: true, subject: true }
+      include: { annualCourse: true, subject: true },
     });
-    if (!acSubject) return res.status(404).json({ error: 'Not found' });
+    if (!acSubject) return res.status(404).json({ error: "Not found" });
     res.json(acSubject);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -108,7 +110,7 @@ exports.deleteAnnualCourseSubject = async (req, res) => {
     await prisma.annualCourseSubject.delete({
       where: { id: Number(req.params.id) },
     });
-    res.json({ message: 'AnnualCourseSubject deleted' });
+    res.json({ message: "AnnualCourseSubject deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

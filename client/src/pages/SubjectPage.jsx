@@ -66,7 +66,7 @@ function SubjectPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const { validate, resetErrors } = useValidation();
+  const { validate, resetErrors, errors } = useValidation();
 
   const handleSubmit = () => {
     resetErrors();

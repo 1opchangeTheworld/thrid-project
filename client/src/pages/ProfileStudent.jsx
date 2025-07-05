@@ -1,17 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Avatar,
-  Divider,
-  TextField,
-  Button,
-} from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
 import api from "../api/axios";
 import Sidebar from "../components/Sidebar";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
 function ProfileStudent() {
   const { user, role } = useAuth();

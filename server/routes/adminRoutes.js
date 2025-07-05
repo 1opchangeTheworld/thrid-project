@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const adminController = require('../controllers/adminController');
+const adminController = require("../controllers/adminController");
 
 /**
  * @swagger
@@ -37,7 +37,7 @@ const adminController = require('../controllers/adminController');
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', adminController.login);
+router.post("/login", adminController.login);
 
 /**
  * @swagger
@@ -56,7 +56,7 @@ router.post('/login', adminController.login);
  *                 message:
  *                   type: string
  */
-router.post('/logout', adminController.logout);
+router.post("/logout", adminController.logout);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.post('/logout', adminController.logout);
  *       401:
  *         description: Not authenticated
  */
-router.get('/profile', adminController.authenticate, (req, res) => {
+router.get("/profile", adminController.authenticate, (req, res) => {
   res.json({ user: req.session.user });
 });
 

@@ -51,33 +51,16 @@ function Sidebar() {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#115b98",
+          // backgroundColor: "#115b98",
+          backgroundColor: "#343359",
         },
         [`& .MuiListItemText-primary`]: {
           color: "#e5e5e5",
           fontWeight: "400",
-          fontFamily: "Kanit, sans-serif",
+          fontFamily: "Chakra Petch, sans-serif",
         },
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 2,
-        }}
-      >
-        <img
-          src={rmutkLogo}
-          alt="logo"
-          style={{
-            width: 200,
-            height: "auto",
-            borderRadius: 8,
-          }}
-        />
-      </Box>
       <List>
         <ListItem button component={Link} to="/dashboard">
           <ListItemIcon sx={{ color: "#fff" }}>
@@ -90,6 +73,12 @@ function Sidebar() {
             <SummarizeIcon />
           </ListItemIcon>
           <ListItemText primary="รายงานเเต่ละปี" />
+        </ListItem>
+        <ListItem button component={Link} to="/preview">
+          <ListItemIcon sx={{ color: "#fff" }}>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary="สรุปผล" />
         </ListItem>
         <ListItem button component={Link} to="/compare">
           <ListItemIcon sx={{ color: "#fff" }}>

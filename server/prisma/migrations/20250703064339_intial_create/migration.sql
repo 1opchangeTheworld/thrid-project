@@ -67,7 +67,6 @@ CREATE TABLE `Subject` (
     `subName` VARCHAR(45) NOT NULL,
     `subUnit` DOUBLE NOT NULL,
     `subGroupId` INTEGER NOT NULL,
-    `type` ENUM('BASE', 'TRANSFER') NOT NULL,
     `majorId` INTEGER NULL,
     `actives` BOOLEAN NOT NULL DEFAULT false,
 
@@ -83,6 +82,7 @@ CREATE TABLE `AnnualCourse` (
     `endDate` DATETIME(3) NOT NULL,
     `facultyId` INTEGER NOT NULL,
     `majorId` INTEGER NOT NULL,
+    `actives` BOOLEAN NOT NULL DEFAULT false,
 
     INDEX `AnnualCourse_facultyId_idx`(`facultyId`),
     INDEX `AnnualCourse_majorId_idx`(`majorId`),
@@ -92,7 +92,9 @@ CREATE TABLE `AnnualCourse` (
 -- CreateTable
 CREATE TABLE `SubGroup` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
+    `codeSubject` VARCHAR(191) NOT NULL DEFAULT '',
+    `nameSubject` VARCHAR(191) NOT NULL DEFAULT '',
+    `description` VARCHAR(191) NULL DEFAULT '',
     `actives` BOOLEAN NOT NULL DEFAULT true,
 
     PRIMARY KEY (`id`)
@@ -103,9 +105,32 @@ CREATE TABLE `AnnualCourseSubject` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `annualCourseId` INTEGER NOT NULL,
     `subjectId` VARCHAR(191) NOT NULL,
-    `type` ENUM('BASE', 'TRANSFER') NOT NULL,
 
     UNIQUE INDEX `AnnualCourseSubject_annualCourseId_subjectId_key`(`annualCourseId`, `subjectId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `StudentTransfer` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `studentId` INTEGER NOT NULL,
+    `annualCourseId` INTEGER NOT NULL,
+    `status` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `StudentTranscriptGrade` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `studentTransfer_id` INTEGER NOT NULL,
+    `subjectId` VARCHAR(191) NOT NULL,
+    `grade` DOUBLE NOT NULL,
+
+    INDEX `StudentTranscriptGrade_studentTransfer_id_idx`(`studentTransfer_id`),
+    INDEX `StudentTranscriptGrade_subjectId_idx`(`subjectId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -144,3 +169,12 @@ ALTER TABLE `AnnualCourseSubject` ADD CONSTRAINT `AnnualCourseSubject_annualCour
 
 -- AddForeignKey
 ALTER TABLE `AnnualCourseSubject` ADD CONSTRAINT `AnnualCourseSubject_subjectId_fkey` FOREIGN KEY (`subjectId`) REFERENCES `Subject`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StudentTransfer` ADD CONSTRAINT `StudentTransfer_annualCourseId_fkey` FOREIGN KEY (`annualCourseId`) REFERENCES `AnnualCourse`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StudentTranscriptGrade` ADD CONSTRAINT `StudentTranscriptGrade_studentTransfer_id_fkey` FOREIGN KEY (`studentTransfer_id`) REFERENCES `StudentTransfer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StudentTranscriptGrade` ADD CONSTRAINT `StudentTranscriptGrade_subjectId_fkey` FOREIGN KEY (`subjectId`) REFERENCES `Subject`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

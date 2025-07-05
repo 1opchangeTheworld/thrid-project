@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -19,6 +19,7 @@ import {
   Button,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import * as dashboardService from "../services/dashboardService";
 import Sidebar from "../components/Sidebar";
 
@@ -36,10 +37,11 @@ function ComparePage() {
   const [transSubjects, setTransSubjects] = useState([]);
   const [course, setCourse] = useState({});
   const [grades, setGrades] = useState({});
+  const fileInputRef = useRef();
+
   useEffect(() => {
     async function fetchData() {
       const res = await dashboardService.getCompareSubjectByYear();
-      console.log("Fetched data:", res.data);
       const course = Array.isArray(res.data) ? res.data[0] : res.data;
       setCourse(course);
       if (course && course.subjects) {
@@ -57,10 +59,50 @@ function ComparePage() {
   );
 
   const handleGradeChange = (subjectId, value) => {
+    // Allow only numbers and dot, and max 2 decimals
+    let val = value.replace(/[^0-9.]/g, "");
+    // Prevent multiple dots
+    const parts = val.split(".");
+    if (parts.length > 2) val = parts[0] + "." + parts[1];
+    // Limit to 2 decimal places
+    if (parts[1]?.length > 2) val = parts[0] + "." + parts[1].slice(0, 2);
+    // Prevent value > 4
+    if (parseFloat(val) > 4) val = "4";
     setGrades((prev) => ({
       ...prev,
-      [subjectId]: value,
+      [subjectId]: val,
     }));
+  };
+
+  // Submit grades handler
+  const handleSubmitGrades = async () => {
+    // grades: { subjectId: grade, ... }
+    // Convert to array of { subject_id, grade }
+    const gradeArray = Object.entries(grades).map(([subject_id, grade]) => ({
+      subject_id,
+      grade,
+    }));
+
+    try {
+      console.log("Saving grades:", gradeArray);
+      // await dashboardService.saveGrades(gradeArray);
+      alert("Saved grades:\n" + JSON.stringify(gradeArray, null, 2));
+    } catch (err) {
+      alert("Error saving grades");
+    }
+  };
+
+  // File import handlers
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      alert(`Selected file: ${file.name}`);
+      // TODO: handle file upload logic here
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current.click();
   };
 
   return (
@@ -164,7 +206,7 @@ function ComparePage() {
                               align="center"
                               sx={{
                                 fontWeight: "bold",
-                                borderLeft: "2px solid #a9a3a1", // Add border here
+                                borderLeft: "2px solid #a9a3a1",
                               }}
                             >
                               รหัสวิชา
@@ -206,7 +248,7 @@ function ComparePage() {
                               {/* TRANSFER */}
                               <TableCell
                                 align="center"
-                                sx={{ borderLeft: "2px solid #a9a3a1" }} // Add border here
+                                sx={{ borderLeft: "2px solid #a9a3a1" }}
                               >
                                 {transList[i]?.subject?.subId || ""}
                               </TableCell>
@@ -232,6 +274,11 @@ function ComparePage() {
                                       )
                                     }
                                     placeholder="เกรด"
+                                    inputProps={{
+                                      inputMode: "decimal",
+                                      pattern: "[0-4](\\.\\d{0,2})?",
+                                      maxLength: 4,
+                                    }}
                                   />
                                 ) : null}
                               </TableCell>
@@ -247,6 +294,33 @@ function ComparePage() {
             </Accordion>
           );
         })}
+
+        {/* Import Transcript Section */}
+        <Box sx={{ mb: 3, display: "flex", gap: 1, mt: 4 }}>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.jpg,.png"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<UploadFileIcon />}
+            onClick={handleImportClick}
+          >
+            นำเข้าไฟล์ Transcript
+          </Button>
+          {/* Submit Grades Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmitGrades}
+          >
+            บันทึกเกรด
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
