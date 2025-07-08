@@ -115,6 +115,7 @@ model SubGroup {
   codeSubject String    @default("")
   nameSubject String    @default("")
   description String?   @default("")
+  unit        Float     @default(0)
   actives     Boolean   @default(true)
   subjects    Subject[]
 }

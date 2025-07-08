@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { getStudentSummary } from "../services/summaryService";
 import { Box } from "@mui/material";
 import Sidebar from "../components/Sidebar";
+import { getStudentSummary } from "../services/summaryService";
+import { useParams } from "react-router-dom";
 
 const PreviewPage = () => {
+  const { years, studentId } = useParams();
+
   const [transfer, setTransfer] = useState(null);
 
   useEffect(() => {
@@ -13,10 +16,25 @@ const PreviewPage = () => {
   if (!transfer) return <div>Loading...</div>;
 
   const grouped = {};
+  let groupCounter = 1;
+
   transfer.annualCourse.subjects.forEach((s) => {
-    const groupName = s.subject.subGroup.name;
-    if (!grouped[groupName]) grouped[groupName] = { BASE: [], TRANSFER: [] };
-    grouped[groupName][s.type].push(s);
+    const groupName = s.subject.subGroup.nameSubject;
+
+    if (!grouped[groupName]) {
+      grouped[groupName] = {
+        autoNumber: groupCounter++,
+        subjects: [],
+        groupInfo: s.subject.subGroup,
+      };
+    }
+    grouped[groupName].subjects.push(s.subject);
+  });
+
+  Object.keys(grouped).forEach((groupName) => {
+    grouped[groupName].subjects.forEach((subject, index) => {
+      subject.inGroupNumber = index + 1;
+    });
   });
 
   const gradeMap = {};
@@ -32,92 +50,116 @@ const PreviewPage = () => {
           <h2>ตารางเทียบรายวิชา</h2>
           <table
             border="1"
-            cellPadding="2"
+            cellPadding="8"
             cellSpacing="0"
             style={{
               width: "100%",
               borderCollapse: "collapse",
-              fontSize: "8px",
+              fontSize: "12px",
               textAlign: "center",
             }}
           >
             <thead>
-              <tr>
-                {/* เอา <th rowSpan="2">กลุ่ม</th> ออก */}
-                <th rowSpan="2">รหัสวิชา</th>
-                <th rowSpan="2">ชื่อวิชา</th>
-                <th rowSpan="2">หน่วยกิต</th>
-                <th colSpan="4">รายวิชาที่ขอเทียบโอน</th>
-                <th rowSpan="2">เกรด</th>
-                <th rowSpan="2">เลือก</th>
-                <th rowSpan="2">เอกสาร</th>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  รหัสกลุ่ม
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  ชื่อกลุ่ม
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  หน่วยกิต
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  กลุ่มเทียบ
+                </th>
+                <th colSpan="3" style={{ padding: "12px" }}>
+                  รายวิชาที่ขอเทียบโอน (จะต้องได้เกรด C หรือ 2 ขึ้นไป)
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  เกรด
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  เลือก
+                  <br />
+                  (✓)
+                </th>
+                <th rowSpan="2" style={{ padding: "12px" }}>
+                  เอกสารระบบ
+                  <br />
+                  CE
+                </th>
               </tr>
               <tr>
                 <th>รหัสวิชา</th>
                 <th>ชื่อวิชา</th>
                 <th>หน่วยกิต</th>
-                <th>กลุ่ม</th>
               </tr>
             </thead>
             <tbody>
-              {Object.keys(grouped).map((group) => {
-                const baseSubjects = grouped[group].BASE;
-                const transferSubjects = grouped[group].TRANSFER;
-
-                return baseSubjects.map((base, idx) => {
-                  const matchedTransfers = transferSubjects.filter(
-                    (ts) => ts.groupId === base.groupId
-                  );
-
-                  const rowspan = matchedTransfers.length || 1;
-
-                  return matchedTransfers.length > 0 ? (
-                    matchedTransfers.map((transfer, transferIdx) => (
-                      <tr
-                        key={`${base.subjectId}-${transfer?.subjectId}-${transferIdx}`}
-                      >
-                        {transferIdx === 0 && (
-                          <>
-                            <td rowSpan={rowspan}>{base.subject.subId}</td>
-                            <td rowSpan={rowspan}>{base.subject.subName}</td>
-                            <td rowSpan={rowspan}>{base.subject.subUnit}</td>
-                          </>
-                        )}
-
-                        <td>{transfer.subject.subId}</td>
-                        <td>{transfer.subject.subName}</td>
-                        <td>{transfer.subject.subUnit}</td>
-                        <td>{transfer.subject.subGroup.name}</td>
-
-                        <td>{gradeMap[transfer.subjectId] || "-"}</td>
-
-                        {transferIdx === 0 && (
-                          <>
-                            <td rowSpan={rowspan}>
-                              {matchedTransfers.some(
-                                (t) => gradeMap[t.subjectId]
-                              ) && "✓"}
-                            </td>
-                            <td rowSpan={rowspan}>CE</td>
-                          </>
-                        )}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr key={`${base.subjectId}-empty`}>
-                      <td>{base.subject.subId}</td>
-                      <td>{base.subject.subName}</td>
-                      <td>{base.subject.subUnit}</td>
-                      <td colSpan={4}>-</td>
-                      <td>-</td>
-                      <td>✓</td>
+              {Object.entries(grouped).map(([groupName, groupData]) =>
+                groupData.subjects.map((subj, idx) => {
+                  const grade = gradeMap[subj.id];
+                  const isValidGrade = grade && grade >= 2;
+                  return (
+                    <tr key={subj.id}>
+                      {idx === 0 && (
+                        <td
+                          rowSpan={groupData.subjects.length}
+                          style={{
+                            padding: "8px",
+                            verticalAlign: "top",
+                            textAlign: "left",
+                          }}
+                        >
+                          {groupData.groupInfo.codeSubject}
+                        </td>
+                      )}
+                      {idx === 0 && (
+                        <td
+                          rowSpan={groupData.subjects.length}
+                          style={{
+                            padding: "8px",
+                            verticalAlign: "top",
+                            textAlign: "left",
+                          }}
+                        >
+                          {groupName}
+                        </td>
+                      )}
+                      <td style={{ padding: "8px" }}>{subj.subUnit}</td>
+                      <td style={{ padding: "8px" }}>{subj.inGroupNumber}</td>
+                      <td style={{ padding: "8px" }}>{subj.subId}</td>
+                      <td style={{ padding: "8px", textAlign: "left" }}>
+                        {subj.subName}
+                      </td>
+                      <td>{subj.subUnit}</td>
+                      <td>{grade ?? "-"}</td>
+                      <td>{isValidGrade ? "✓" : ""}</td>
                       <td>CE</td>
                     </tr>
                   );
-                });
-              })}
+                })
+              )}
             </tbody>
           </table>
+          <div
+            style={{
+              marginTop: 20,
+              padding: 10,
+              backgroundColor: "#f9f9f9",
+              borderRadius: 5,
+            }}
+          >
+            <h3>สรุปกลุ่มวิชา</h3>
+            {Object.entries(grouped).map(([groupName, groupData]) => (
+              <div key={groupName}>
+                <strong>กลุ่มที่ {groupData.autoNumber}:</strong>{" "}
+                {groupData.groupInfo.codeSubject} - {groupName}
+                <span> ({groupData.subjects.length} วิชา)</span>
+              </div>
+            ))}
+          </div>
         </div>
       </Box>
     </Box>

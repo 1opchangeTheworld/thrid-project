@@ -16,7 +16,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 const years = [2022, 2023, 2024, 2025];
 

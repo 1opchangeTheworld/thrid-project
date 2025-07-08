@@ -16,7 +16,7 @@ export function useValidation(requiredFields = []) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const resetErrors = () => setErrors({});
   return { errors, validate, resetErrors };
 }

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `SubGroup` ADD COLUMN `unit` DOUBLE NOT NULL DEFAULT 0;
