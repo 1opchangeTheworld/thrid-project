@@ -158,43 +158,43 @@ function CoursePage() {
   };
 
   const columns = [
-    { field: "year", headerName: "Year" },
-    { field: "term", headerName: "Term" },
+    { field: "year", headerName: "ปีการศึกษา" },
+    { field: "term", headerName: "ภาคเรียน" },
     {
       field: "startDate",
-      headerName: "Start Date",
+      headerName: "วันที่เริ่มต้น",
       renderCell: ({ value }) => formatDateDDMMYYYY(value),
     },
     {
       field: "endDate",
-      headerName: "End Date",
+      headerName: "วันที่สิ้นสุด",
       renderCell: ({ value }) => formatDateDDMMYYYY(value),
     },
     {
       field: "faculty",
-      headerName: "Faculty",
+      headerName: "คณะ",
       renderCell: ({ row }) =>
         faculties.find((f) => f.id === row.facultyId)?.name || row.facultyId,
     },
     {
       field: "major",
-      headerName: "Major",
+      headerName: "สาขา",
       renderCell: ({ row }) =>
         majors.find((m) => m.id === row.majorId)?.name || row.majorId,
     },
     {
       field: "actives",
-      headerName: "Actives",
+      headerName: "สถานะ",
       renderCell: ({ row }) =>
         row.actives ? (
-          <Chip label="Active" color="success" size="small" />
+          <Chip label="เปิดใช้งาน" color="success" size="small" />
         ) : (
-          <Chip label="Inactive" color="default" size="small" />
+          <Chip label="ปิดใช้งาน" color="default" size="small" />
         ),
     },
     {
       field: "subjects",
-      headerName: "Subjects",
+      headerName: "รายวิชา",
       renderCell: ({ row }) => {
         const subjectNames = row.subjects
           ?.map(
@@ -220,14 +220,14 @@ function CoursePage() {
               setSubjectDialogOpen(true);
             }}
           >
-            List Subject
+            ดูรายวิชา
           </Button>
         );
       },
     },
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: "การดำเนินการ",
       renderCell: ({ row }) => (
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button

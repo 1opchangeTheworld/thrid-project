@@ -31,7 +31,7 @@ import {
 const columns = [
   {
     field: "profile_img",
-    headerName: "Image",
+    headerName: "รูปภาพ",
     renderCell: (row) => (
       <img
         src={row.profile_img ? row.profile_img : defaultProfileImg}
@@ -46,13 +46,13 @@ const columns = [
       />
     ),
   },
-  { field: "student_id", headerName: "Student Id" },
-  { field: "firstname_th", headerName: "First Name" },
-  { field: "lastname_th", headerName: "Last Name" },
-  { field: "email", headerName: "Email" },
-  { field: "facultyName", headerName: "Faculty" },
-  { field: "majorName", headerName: "Major" },
-  { field: "actions", headerName: "Actions" },
+  { field: "student_id", headerName: "รหัสนักศึกษา" },
+  { field: "firstname_th", headerName: "ชื่อ" },
+  { field: "lastname_th", headerName: "นามสกุล" },
+  { field: "email", headerName: "อีเมล" },
+  { field: "facultyName", headerName: "คณะ" },
+  { field: "majorName", headerName: "สาขา" },
+  { field: "actions", headerName: "ตัวเลือก" },
 ];
 
 function StudentPage() {

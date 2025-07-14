@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import {
   Box,
@@ -15,51 +16,79 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
-
-const years = [2022, 2023, 2024, 2025];
+import * as annualService from "../services/annualCourseService";
 
 function AnnualDataPage() {
   const [selectedYear, setSelectedYear] = useState("");
-  const [summary, setSummary] = useState(null);
-  const reportRef = useRef(null);
+  const [annualCourses, setAnnualCourses] = useState([]);
+  const [summary, setSummary] = useState([]);
+  const [years, setYears] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const dummySummary = {
-    year: selectedYear,
-    totalStudents: 120,
-    faculties: [
-      {
-        id: 1,
-        name: "Engineering",
-        majors: [
-          { id: 11, name: "Computer", studentCount: 40 },
-          { id: 12, name: "Electrical", studentCount: 20 },
-        ],
-      },
-      {
-        id: 2,
-        name: "Science",
-        majors: [
-          { id: 21, name: "Biology", studentCount: 30 },
-          { id: 22, name: "Chemistry", studentCount: 30 },
-        ],
-      },
-    ],
-  };
+  const reportRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await annualService.getAnnualCourses();
+      console.log(result.data);
+      setAnnualCourses(result.data);
+      const uniqueYears = [...new Set(result.data.map((c) => c.year))];
+      setYears(uniqueYears);
+    };
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     setSelectedYear(e.target.value);
-    setSummary(null);
+    setSummary([]);
   };
 
   const handleGetSummary = () => {
-    setSummary(dummySummary);
+    const result = annualCourses.filter(
+      (course) => course.year === parseInt(selectedYear)
+    );
+    setSummary(result);
   };
 
   const handlePrint = () => {
     if (reportRef.current) {
       window.print();
     }
+  };
+
+  const uniqueSubjects = Array.from(
+    new Map(
+      selectedSubjects.map((subject) => [
+        subject.subject.subGroup.codeSubject, // ใช้ค่านี้เป็น key
+        subject,
+      ])
+    ).values()
+  );
+
+  const handleCompare = (year) => {
+    navigate(`/compare?year=${year}`);
+  };
+
+  const handleViewSubjects = (course) => {
+    console.log("Selected Course:", course);
+    setSelectedSubjects(course.subjects);
+    setSelectedCourse(course);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -75,16 +104,22 @@ function AnnualDataPage() {
           mt: 5,
         }}
       >
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          Yearly Semester Report
+        <Typography
+          variant="h4"
+          fontWeight={"bold"}
+          color="primary"
+          sx={{ mb: 3 }}
+        >
+          รายงานหลักสูตรประจำปี
         </Typography>
+
         <FormControl sx={{ minWidth: 300, mb: 3 }}>
-          <InputLabel id="year-label">Select Year</InputLabel>
+          <InputLabel id="year-label">เลือกปีการศึกษา</InputLabel>
           <Select
             labelId="year-label"
             id="year"
             value={selectedYear}
-            label="Select Year"
+            label="เลือกปีการศึกษา"
             onChange={handleChange}
           >
             {years.map((year) => (
@@ -94,56 +129,106 @@ function AnnualDataPage() {
             ))}
           </Select>
         </FormControl>
-        <Button variant="contained" onClick={handleGetSummary} sx={{ mb: 3 }}>
-          Get Summary
-        </Button>
-        <Button variant="outlined" onClick={handlePrint} sx={{ mb: 3, ml: 1 }}>
-          Print Report
-        </Button>
-        {summary && (
-          <Box
-            ref={reportRef}
-            sx={{
-              p: 3,
-              borderRadius: 2,
-              boxShadow: 3,
-              width: "100%",
-              maxWidth: 800,
-              bgcolor: "background.paper",
-            }}
+
+        <Box>
+          <Button variant="contained" onClick={handleGetSummary} sx={{ mb: 3 }}>
+            ดึงข้อมูล
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handlePrint}
+            sx={{ mb: 3, ml: 1 }}
           >
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Summary for {summary.year}
-            </Typography>
-            <TableContainer component={Paper} sx={{ mb: 2 }}>
-              <Table>
+            พิมพ์รายงาน
+          </Button>
+        </Box>
+
+        {summary.length > 0 && (
+          <TableContainer component={Paper} sx={{ maxWidth: 900, mb: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>คณะ</TableCell>
+                  <TableCell>สาขา</TableCell>
+                  <TableCell align="center">จำนวนวิชา</TableCell>
+                  <TableCell align="center">การดำเนินการ</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {summary.map((course) => {
+                  const key = `${course.faculty.id}-${course.major.id}`;
+                  const subjectCount = course.subjects.length;
+
+                  return (
+                    <TableRow key={key}>
+                      <TableCell>{course.faculty.name}</TableCell>
+                      <TableCell>{course.major.name}</TableCell>
+                      <TableCell align="center">{subjectCount}</TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleCompare(course.year)}
+                          sx={{ mr: 1 }}
+                        >
+                          เปรียบเทียบ
+                        </Button>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleViewSubjects(course)}
+                        >
+                          ดูรายวิชา
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {/* Subject Dialog */}
+        <Dialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle bgcolor={"#2d1259"} color="white">
+            รายวิชาใน {selectedCourse?.major.name || "สาขาที่เลือก"}
+          </DialogTitle>
+          <DialogContent dividers>
+            <TableContainer component={Paper} elevation={0}>
+              <Table size="small">
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Faculty</TableCell>
-                    <TableCell>Major</TableCell>
-                    <TableCell align="right">Students</TableCell>
+                  <TableRow sx={{ backgroundColor: "#f0f0f0" }}>
+                    <TableCell>รหัสวิชา</TableCell>
+                    <TableCell>ชื่อหน่วยกิต</TableCell>
+                    <TableCell>หน่วยกิต</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {summary.faculties.map((faculty) =>
-                    faculty.majors.map((major) => (
-                      <TableRow key={major.id}>
-                        <TableCell>{faculty.name}</TableCell>
-                        <TableCell>{major.name}</TableCell>
-                        <TableCell align="right">
-                          {major.studentCount}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                  {uniqueSubjects.map((subject) => (
+                    <TableRow key={subject.id}>
+                      <TableCell>
+                        {subject.subject.subGroup.codeSubject}
+                      </TableCell>
+                      <TableCell>
+                        {subject.subject.subGroup.nameSubject}
+                      </TableCell>
+                      <TableCell>{subject.subject.subGroup.unit}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              Total Students: {summary.totalStudents}
-            </Typography>
-          </Box>
-        )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>ปิด</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

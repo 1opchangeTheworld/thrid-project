@@ -25,6 +25,7 @@ import { useAuth } from "../hooks/useAuth";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import rmutkLogo from "../assets/image/rmutk.png";
 import SummarizeIcon from "@mui/icons-material/Summarize";
+import BallotIcon from "@mui/icons-material/Ballot";
 
 const drawerWidth = 240;
 
@@ -76,7 +77,7 @@ function Sidebar() {
         </ListItem>
         <ListItem button component={Link} to="/preview">
           <ListItemIcon sx={{ color: "#fff" }}>
-            <SummarizeIcon />
+            <BallotIcon />
           </ListItemIcon>
           <ListItemText primary="สรุปผล" />
         </ListItem>

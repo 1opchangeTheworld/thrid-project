@@ -21,9 +21,9 @@ import {
 } from "@mui/material";
 
 const columns = [
-  { field: "name", headerName: "Major Name" },
-  { field: "facultyName", headerName: "Faculty Name" },
-  { field: "actions", headerName: "Actions" },
+  { field: "name", headerName: "สาขา" },
+  { field: "facultyName", headerName: "คณะ" },
+  { field: "actions", headerName: "ตัวเลือก" },
 ];
 
 function MajorPage() {

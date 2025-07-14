@@ -13,7 +13,17 @@ exports.createAnnualCourse = async (req, res) => {
 exports.getAllAnnualCourses = async (req, res) => {
   try {
     const annualCourses = await prisma.annualCourse.findMany({
-      include: { faculty: true, major: true, subjects: true },
+      include: {
+        faculty: true,
+        major: true,
+        subjects: {
+          include: {
+            subject: {
+              include: { subGroup: true },
+            },
+          },
+        },
+      },
     });
     res.json(annualCourses);
   } catch (error) {

@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const annualCourseController = require('../controllers/annualCourseController');
+const annualCourseController = require("../controllers/annualCourseController");
 
 /**
  * @swagger
@@ -25,7 +25,7 @@ const annualCourseController = require('../controllers/annualCourseController');
  *       200:
  *         description: The created annual course
  */
-router.post('/', annualCourseController.createAnnualCourse);
+router.post("/", annualCourseController.createAnnualCourse);
 
 /**
  * @swagger
@@ -37,7 +37,7 @@ router.post('/', annualCourseController.createAnnualCourse);
  *       200:
  *         description: List of annual courses
  */
-router.get('/', annualCourseController.getAllAnnualCourses);
+router.get("/", annualCourseController.getAllAnnualCourses);
 
 /**
  * @swagger
@@ -58,7 +58,7 @@ router.get('/', annualCourseController.getAllAnnualCourses);
  *       404:
  *         description: Not found
  */
-router.get('/:id', annualCourseController.getAnnualCourseById);
+router.get("/:id", annualCourseController.getAnnualCourseById);
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ router.get('/:id', annualCourseController.getAnnualCourseById);
  *       200:
  *         description: The updated annual course
  */
-router.put('/:id', annualCourseController.updateAnnualCourse);
+router.put("/:id", annualCourseController.updateAnnualCourse);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.put('/:id', annualCourseController.updateAnnualCourse);
  *       200:
  *         description: Deleted
  */
-router.delete('/:id', annualCourseController.deleteAnnualCourse);
+router.delete("/:id", annualCourseController.deleteAnnualCourse);
 
 /**
  * @swagger
@@ -127,7 +127,7 @@ router.delete('/:id', annualCourseController.deleteAnnualCourse);
  *       200:
  *         description: The created annual course subject
  */
-router.post('/subject', annualCourseController.createAnnualCourseSubject);
+router.post("/subject", annualCourseController.createAnnualCourseSubject);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ router.post('/subject', annualCourseController.createAnnualCourseSubject);
  *       200:
  *         description: List of annual course subjects
  */
-router.get('/subject', annualCourseController.getAllAnnualCourseSubjects);
+router.get("/subject", annualCourseController.getAllAnnualCourseSubjects);
 
 /**
  * @swagger
@@ -160,7 +160,7 @@ router.get('/subject', annualCourseController.getAllAnnualCourseSubjects);
  *       404:
  *         description: Not found
  */
-router.get('/subject/:id', annualCourseController.getAnnualCourseSubjectById);
+router.get("/subject/:id", annualCourseController.getAnnualCourseSubjectById);
 
 /**
  * @swagger
@@ -185,7 +185,7 @@ router.get('/subject/:id', annualCourseController.getAnnualCourseSubjectById);
  *       200:
  *         description: The updated annual course subject
  */
-router.put('/subject/:id', annualCourseController.updateAnnualCourseSubject);
+router.put("/subject/:id", annualCourseController.updateAnnualCourseSubject);
 
 /**
  * @swagger
@@ -204,6 +204,6 @@ router.put('/subject/:id', annualCourseController.updateAnnualCourseSubject);
  *       200:
  *         description: Deleted
  */
-router.delete('/subject/:id', annualCourseController.deleteAnnualCourseSubject);
+router.delete("/subject/:id", annualCourseController.deleteAnnualCourseSubject);
 
 module.exports = router;

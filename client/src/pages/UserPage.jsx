@@ -30,16 +30,16 @@ import {
 import { USER_ROLES } from "../shares/roles";
 
 const columns = [
-  { field: "username", headerName: "Username" },
-  { field: "firstname", headerName: "First Name" },
-  { field: "lastname", headerName: "Last Name" },
-  { field: "telephone", headerName: "Telephone" },
-  { field: "email", headerName: "Email" },
-  { field: "facultyName", headerName: "Faculty Name" },
-  { field: "majorName", headerName: "Major Name" },
+  { field: "username", headerName: "ชื่อผู้ใช้" },
+  { field: "firstname", headerName: "ชื่อ" },
+  { field: "lastname", headerName: "นามสกุล" },
+  { field: "telephone", headerName: "เบอร์โทรศัพท์" },
+  { field: "email", headerName: "อีเมล" },
+  { field: "facultyName", headerName: "คณะ" },
+  { field: "majorName", headerName: "สาขา" },
   {
     field: "role",
-    headerName: "Role",
+    headerName: "ระดับผู้ใช้งาน",
     renderCell: (params) => {
       let color = "default";
       let label = params.value;
@@ -60,7 +60,7 @@ const columns = [
       );
     },
   },
-  { field: "actions", headerName: "Actions" },
+  { field: "actions", headerName: "ตัวเลือก" },
 ];
 
 function UserPage() {
@@ -90,6 +90,7 @@ function UserPage() {
 
   const fetchUsers = async () => {
     const res = await getUsers();
+    console.log("Fetched users:", res.data);
     setUsers(res.data);
   };
 

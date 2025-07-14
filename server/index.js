@@ -41,7 +41,7 @@ const setupSwagger = require("./swaggerConfig");
 setupSwagger(app);
 
 app.use("/students", studentRoutes);
-app.use("/annual-courses", annualCourseRoutes);
+app.use("/api/annual-courses", annualCourseRoutes);
 app.use("/faculties", facultyRoutes);
 app.use("/users", userRoutes);
 app.use("/subjects", subjectRoutes);

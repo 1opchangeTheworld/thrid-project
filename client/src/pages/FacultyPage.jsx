@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 
 const columns = [
-  { field: "name", headerName: "Faculty Name" },
-  { field: "actions", headerName: "Actions" },
+  { field: "name", headerName: "คณะ" },
+  { field: "actions", headerName: "ตัวเลือก" },
 ];
 
 export default function FacultyPage() {

@@ -23,17 +23,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import * as dashboardService from "../services/dashboardService";
 import Sidebar from "../components/Sidebar";
-
-function groupBySubGroup(subjects) {
-  return subjects.reduce((acc, item) => {
-    const groupId = item.subject?.subGroupId || "no-group";
-    if (!acc[groupId]) acc[groupId] = [];
-    acc[groupId].push(item);
-    return acc;
-  }, {});
-}
+import { useNavigate } from "react-router-dom";
 
 function ComparePage() {
+  const navigate = useNavigate();
+
   const [subjects, setSubjects] = useState([]);
   const [course, setCourse] = useState({});
   const [grades, setGrades] = useState({});
@@ -50,6 +44,20 @@ function ComparePage() {
     }
     fetchData();
   }, []);
+
+  function groupBySubGroup(subjects) {
+    return subjects.reduce((acc, item) => {
+      const groupId = item.subject?.subGroupId || "no-group";
+      if (!acc[groupId]) acc[groupId] = [];
+      acc[groupId].push(item);
+      return acc;
+    }, {});
+  }
+
+  const goToPreviewPage = () => {
+    console.log("Navigating to preview page");
+    navigate("/preview");
+  };
 
   const groupedSubjects = groupBySubGroup(subjects);
   const groupIds = Object.keys(groupedSubjects);
@@ -117,6 +125,8 @@ function ComparePage() {
           const subjectList = groupedSubjects[groupId];
           const subGroupName = subjectList[0]?.subject?.subGroup?.nameSubject;
           const unit = subjectList[0]?.subject?.subGroup?.unit;
+
+          console.log("Processing group:", unit);
           const codeSubject = subjectList[0]?.subject?.subGroup?.codeSubject;
           return (
             <Accordion
@@ -229,6 +239,9 @@ function ComparePage() {
             onClick={handleImportClick}
           >
             นำเข้าไฟล์ Transcript
+          </Button>
+          <Button variant="contained" color="warning" onClick={goToPreviewPage}>
+            ดูตัวอย่าง Transcript
           </Button>
           <Button
             variant="contained"

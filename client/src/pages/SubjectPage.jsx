@@ -17,10 +17,10 @@ import {
 import { useValidation } from "../hooks/useValidation";
 
 const columns = [
-  { field: "subId", headerName: "Subject ID" },
-  { field: "subName", headerName: "Subject Name" },
-  { field: "subUnit", headerName: "Unit" },
-  { field: "actions", headerName: "Actions" },
+  { field: "subId", headerName: "รหัสวิชา" },
+  { field: "subName", headerName: "ชื่อวิชา" },
+  { field: "subUnit", headerName: "หน่วยกิต" },
+  { field: "actions", headerName: "การดำเนินการ" },
 ];
 
 function SubjectPage() {
@@ -121,7 +121,9 @@ function SubjectPage() {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h4">Subjects</Typography>
+          <Typography variant="h5" fontWeight={700}>
+            วิชา
+          </Typography>
           <Button variant="contained" onClick={() => handleOpen()}>
             Add Subject
           </Button>

@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const majorController = require('../controllers/majorController');
+const majorController = require("../controllers/majorController");
 
 /**
  * @swagger
@@ -32,7 +32,7 @@ const majorController = require('../controllers/majorController');
  *                   faculty_id:
  *                     type: integer
  */
-router.get('/', majorController.getMajors);
+router.get("/", majorController.getMajors);
 
 /**
  * @swagger
@@ -64,7 +64,7 @@ router.get('/', majorController.getMajors);
  *       404:
  *         description: Major not found
  */
-router.get('/:id', majorController.getMajorById);
+router.get("/:id", majorController.getMajorById);
 
 /**
  * @swagger
@@ -92,7 +92,7 @@ router.get('/:id', majorController.getMajorById);
  *       400:
  *         description: Invalid input
  */
-router.post('/', majorController.createMajor);
+router.post("/", majorController.createMajor);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.post('/', majorController.createMajor);
  *       400:
  *         description: Invalid input
  */
-router.put('/:id', majorController.updateMajor);
+router.put("/:id", majorController.updateMajor);
 
 /**
  * @swagger
@@ -145,6 +145,6 @@ router.put('/:id', majorController.updateMajor);
  *       404:
  *         description: Major not found
  */
-router.delete('/:id', majorController.deleteMajor);
+router.delete("/:id", majorController.deleteMajor);
 
 module.exports = router;
